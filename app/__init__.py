@@ -1,21 +1,7 @@
 from flask import Flask
+from app.routes.general import register_routes
 
-
-def test_app():
+def create_app():
     app = Flask(__name__)
-
-    @app.route("/")
-    def index():
-        return {
-            "success": True,
-            "message": "Matcha jajajaja es ta funcionado"
-        }
-
-    @app.route("/health")
-    def health():
-        return {
-            "success": True,
-            "message": "Llegaste aqui Mother F**ck"
-        }
-
+    register_routes(app)
     return app
