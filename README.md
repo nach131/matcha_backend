@@ -96,10 +96,10 @@ notifications
 
 
 ### Docker commands:
-'''sh
+```sh
+    # docker build -t backend:1.0 .
     docker build <-t image-name> .
-    # example: docker build -t backend:1.0 .
 
+    # docker run -d -p 5100:5000 --name backend backend:1.0
     docker run <-d> <-p host_port:container_port> <--name container-name> <image-name>
-    # example: docker run -d -p 5100:5000 --name backend backend:1.0
-'''
+```

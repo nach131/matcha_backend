@@ -3,14 +3,19 @@
 if [ $# -gt 1 ]; then
     echo "It accepts only one argument, which is the option of execution."
     exit 1
-elif [ $# -eq 1 ] && [ $1 != "exec" ]; then
-    echo "Wrong argument. It only accepts 'exec' as an argument."
+elif [ $# -eq 1 ] && [ $1 == 1 ] && [ $2 == 2 ]; then
+    echo "Wrong argument. It only accepts 1 or 2 as argument."
     exit 1
 fi
 
-docker build -t backend:1.0 .
-docker run -d -p 5100:5000 --name backend backend:1.0
+if [ $1 == 1 ] || [ $1 == 2 ]; then
+    docker stop backend
+    docker rm backend
+fi
 
-if [ $# -eq 1 ] && [ $1 == "exec" ]; then
+docker build -t backend:1.0 .
+docker run -d -v $(pwd):/backend -p 5100:5000 --name backend backend:1.0
+
+if [ $1 == 2 ]; then
     docker exec -it backend bash
 fi

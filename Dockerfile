@@ -10,4 +10,5 @@ COPY . .
 EXPOSE 5000
 
 CMD ["sleep", "infinity"]
-# CMD ["flask", "--app", "app:test_app", "run", "--host=0.0.0.0", "--port=5000", "--debug"]
+# flask --app app:create_app run --host=0.0.0.0 --port=5000 --debug
+# CMD ["flask", "--app", "app:create_app", "run", "--host=0.0.0.0", "--port=5000", "--debug"]

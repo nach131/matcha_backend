@@ -3,7 +3,7 @@ import os
 from psycopg_pool import ConnectionPool
 from psycopg.rows import dict_row
 
-DATABASE_URL = (
+""" DATABASE_URL = (
     f"host={os.environ['DB_HOST']} "
     f"port={os.environ.get('DB_PORT', '5432')} "
     f"dbname={os.environ['DB_NAME']} "
@@ -18,7 +18,8 @@ pool = ConnectionPool(
     kwargs={
         "row_factory": dict_row
     }
-)
+) """
 
 def get_connection():
+    return "Ciao"
     return pool.connection()

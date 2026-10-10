@@ -14,6 +14,7 @@ users_bp = Blueprint(
 @users_bp.route("/<int:user_id>", methods=["GET"])
 def get_user_route(user_id):
     # Logic to retrieve user by ID
+    get_user(user_id)
     return {
         "success": True,
         "message": f"User with ID {user_id} retrieved successfully."
