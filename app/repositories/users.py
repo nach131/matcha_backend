@@ -11,26 +11,26 @@ def find_user_by_id(user_id):
         WHERE id = %s
     """
 
-    # with get_connection() as conn:
-        # with conn.cursor() as cursor:
-            # print (f"Executing query: {query} with parameters: user_id={user_id}")
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            print (f"Executing query: {query} with parameters: user_id={user_id}")
 
-            # cursor.execute(
-            #     query,
-            #     (user_id,)
-            # )
+            cursor.execute(
+                query,
+                (user_id,)
+            )
 
-            # row = cursor.fetchone()
+            row = cursor.fetchone()
 
-    # if row is None:
-    #     return None
+    if row is None:
+        return None
 
-    # return {
-    #     "id": row[0],
-    #     "name": row[1],
-    #     "email": row[2]
-    # }
-    return f"User retrieved with id: {user_id}"
+    return {
+        "id": row[0],
+        "name": row[1],
+        "email": row[2]
+    }
+    #return f"User retrieved with id: {user_id}"
 
 def insert_user(name, email):
     
