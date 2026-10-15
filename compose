@@ -14,9 +14,8 @@ fi
 
 compose_file="$(dirname "$0")/docker-compose.yaml"
 
-if [ "$#" -eq 1 ] && [ "$1" = "1" ]; then
+if [ "$#" -eq 1 ] && { [ "$1" = "1" ] || [ "$1" = "2" ]; }; then
     docker compose -f "$compose_file" down --volumes --remove-orphans
-	exit 0
 fi
 
 docker compose -f "$compose_file" build

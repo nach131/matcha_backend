@@ -1,4 +1,4 @@
-from app.database import get_connection
+from app.database.connection import get_connection
 
 def find_user_by_id(user_id):
 

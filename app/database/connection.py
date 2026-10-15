@@ -13,4 +13,7 @@ pool = ConnectionPool(
 )
 
 def get_connection():
-    return pool.connection()
+    print("Getting connection from pool...")
+    conn = pool.connection()
+    print("Connection acquired:", conn)
+    return conn

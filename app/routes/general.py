@@ -1,3 +1,5 @@
+# TODO: Delete this file after testing
+
 def register_routes(app):
     @app.route("/")
     def index():
