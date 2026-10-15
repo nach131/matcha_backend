@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+if [ "$#" -gt 1 ]; then
+    echo "It accepts only one argument, which is the option of execution."
+    exit 1
+fi
+
+if [ "$#" -eq 1 ] && [ "$1" != "1" ] && [ "$1" != "2" ]; then
+    echo "Wrong argument. It only accepts 1 or 2 as argument."
+    exit 1
+fi
+
+compose_file="$(dirname "$0")/docker-compose.yaml"
+
+if [ "$#" -eq 1 ] && { [ "$1" = "1" ] || [ "$1" = "2" ]; }; then
+    docker compose -f "$compose_file" down --volumes --remove-orphans
+fi
+
+docker compose -f "$compose_file" build
+docker compose -f "$compose_file" up --detach
+
+if [ "$#" -eq 1 ] && [ "$1" = "2" ]; then
+    docker compose -f "$compose_file" exec backend bash
+fi

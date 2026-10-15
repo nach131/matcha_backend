@@ -1,21 +1,16 @@
 from flask import Flask
+from app.routes.general import register_routes
+from app.routes.users import users_bp
 
-
-def test_app():
+def create_app():
+    # Create the Flask application
     app = Flask(__name__)
 
-    @app.route("/")
-    def index():
-        return {
-            "success": True,
-            "message": "Matcha jajajaja es ta funcionado"
-        }
+    # TODO: Delete this line after testing
+    # Register general routes
+    register_routes(app)
 
-    @app.route("/health")
-    def health():
-        return {
-            "success": True,
-            "message": "Llegaste aqui Mother F**ck"
-        }
+    # Register the users blueprint
+    app.register_blueprint(users_bp)
 
     return app

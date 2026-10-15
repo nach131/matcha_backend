@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: matcha-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    env_file:
+      - .env
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: matcha-backend
+    restart: unless-stopped
+
+    environment:
+    #   DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${DB_PORT}/${POSTGRES_DB}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST:-postgres}:${DB_PORT}/${POSTGRES_DB}
+      FLASK_ENV: development
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    ports:
+      - "5100:5000"
+    env_file:
+      - .env
+
+    volumes:
+      - ./:/backend
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
