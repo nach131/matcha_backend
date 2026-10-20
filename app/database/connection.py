@@ -2,7 +2,9 @@ import os
 
 from psycopg_pool import ConnectionPool
 from psycopg.rows import dict_row
+from app.utils.logger import Logger
 
+logger = Logger.get_logger(__name__)
 DATABASE_URL = os.environ["DATABASE_URL"]
 
 pool = ConnectionPool(
@@ -13,7 +15,7 @@ pool = ConnectionPool(
 )
 
 def get_connection():
-    print("Getting connection from pool...")
+    logger.info("Getting connection from pool...")
     conn = pool.connection()
-    print("Connection acquired:", conn)
+    logger.critical("Connection acquired: %s", conn)
     return conn
