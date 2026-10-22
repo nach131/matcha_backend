@@ -1,4 +1,7 @@
 # TODO: Delete this file after testing
+from app.utils.logger import Logger
+
+logger = Logger.create_logger(__name__)
 
 def register_routes(app):
     @app.route("/")

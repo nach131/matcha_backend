@@ -1,7 +1,8 @@
 import os
 
-from psycopg_pool import ConnectionPool
 from psycopg.rows import dict_row
+from psycopg_pool import ConnectionPool
+
 from app.utils.logger import Logger
 
 logger = Logger.get_logger(__name__)
@@ -17,5 +18,6 @@ pool = ConnectionPool(
 def get_connection():
     logger.info("Getting connection from pool...")
     conn = pool.connection()
-    logger.critical("Connection acquired: %s", conn)
+    logger.info("Connection acquired")
+    logger.debug(f"Connection details: {conn}")
     return conn
