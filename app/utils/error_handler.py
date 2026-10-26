@@ -1,3 +1,5 @@
+"""Error handling functions for database operations."""
+
 import psycopg
 
 from flask import Flask, jsonify

@@ -1,6 +1,8 @@
-from app.database.connection import get_connection
+"""User repository for handling database operations related to users."""
+
 from app.utils.logger import Logger
-from app.models.user import User, UserCreate, UserForSearch
+from app.database.connection import get_connection
+from app.models.user import User, UserCreate, UserSearch
 
 logger = Logger.create_logger(__name__)
 
@@ -9,10 +11,10 @@ def find_user_by_name(user_name: str) -> User | None:
     Find complete user's informations by their username.
     
     Args:
-        user_name (str): The username of the user to find.
+        user_name: The username of the user to find.
 
     Returns:
-        User | None: Returns a User object if found, otherwise None.
+        Returns a `User` object if found, otherwise None.
     """
 
     query = """
@@ -47,19 +49,20 @@ def find_user_by_name(user_name: str) -> User | None:
             row = cursor.fetchone()
 
     if row is None:
+        logger.warning(f"No user found with username: {user_name}")
         return None
 
     return User(**row)
 
-def search_users_by_name(user_name: str) -> list[UserForSearch]:
+def search_users_by_name(user_name: str) -> list[UserSearch]:
     """
     Search for users by their username.
 
     Args:
-        user_name (str): The username to search for.
+        user_name: The username to search for.
 
     Returns:
-        list[UserForSearch]: A list of UserForSearch objects that match the search term.
+        A list of `UserSearch` objects that match the search term.
     """
 
     query = """
@@ -88,10 +91,19 @@ def search_users_by_name(user_name: str) -> list[UserForSearch]:
             usernames = ", ".join(row["username"] for row in rows)
             logger.debug("Found %s users: %s", cursor.rowcount, usernames)
 
-    return [UserForSearch(**row) for row in rows]
+    return [UserSearch(**row) for row in rows]
 
 def insert_user(user: UserCreate) -> int:
-    
+    """
+    Insert a new user into the database.
+
+    Args:
+        user: The user creation request.
+
+    Returns:
+        The ID of the newly inserted user.
+    """
+
     query = """
         INSERT INTO users (
             username,
@@ -126,5 +138,6 @@ def insert_user(user: UserCreate) -> int:
                 )
             )
             user_id = cursor.fetchone()["id"]
+            logger.info(f"User inserted successfully: {user.username} (ID: {user_id})")
 
     return user_id

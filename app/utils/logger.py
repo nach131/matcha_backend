@@ -1,3 +1,5 @@
+"""Logging utility for the application."""
+
 import os, sys, logging, logging.handlers
 
 """
@@ -25,11 +27,12 @@ class Logger:
         Create and configure the logger instance. If a logger already exists, return it. Otherwise, create a new logger with the specified log file and log level.
 
         Args:
-            log_file (str): The path to the log file if the user wants to specify a custom location.
+            log_file: The path to the log file if the user wants to specify a custom location.
 
         Returns:
-            logger (logging.Logger): The configured logger instance.
+            The configured logger instance.
         """
+
         if cls._logger is not None:
             return cls._logger
 
@@ -79,12 +82,13 @@ class Logger:
         Get a logger instance with a specific name and log level.
 
         Args:
-            name (str): The name of the logger.
-            log_level (int | None): The log level for the logger.
+            name: The name of the logger.
+            log_level: The log level for the logger.
 
         Returns:
-            logger: The requested logger instance.
+            The requested logger instance.
         """
+
         logger_name = "matcha_backend"
         if name:
             logger_name = f"{logger_name}.{name}"

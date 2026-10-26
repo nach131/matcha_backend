@@ -1,3 +1,5 @@
+"""User service functions."""
+
 import re, math
 
 from collections.abc import Mapping
@@ -5,14 +7,34 @@ from collections.abc import Mapping
 from werkzeug.security import generate_password_hash
 
 from app.models.user import UserCreate
-from app.repositories.users import find_user_by_name, insert_user
+from app.repositories.users import (
+    find_user_by_name,
+    search_users_by_name,
+    insert_user,
+)
 
 
 def get_user(user_name: str):
+    """Retrieve a user from the database by their username."""
+
     return find_user_by_name(user_name)
 
+def search_users(user_name: str):
+    """Search for users by their username."""
+
+    return search_users_by_name(user_name)
 
 def create_user(data: Mapping[str, object]) -> dict[str, int | str]:
+    """
+    Create a new user in the database after validating the input data.
+
+    Args:
+        data: A mapping containing user data.
+
+    Returns:
+        A dictionary containing the new user's ID and username.
+    """
+
     required_fields = {
         "username",
         "email",
