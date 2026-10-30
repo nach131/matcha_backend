@@ -1,5 +1,7 @@
 """Flask routes for user-related operations."""
 
+from dataclasses import asdict
+
 from flask import Blueprint, request
 
 from app.utils.logger import Logger
@@ -25,10 +27,12 @@ def get_user_route(user_name):
             "message": f"User with name {user_name} not found.",
             "data": None
         }, 404
+    user_data = asdict(user)
+    user_data.pop("password_hash")
     return {
         "success": True,
         "message": f"User with name {user_name} retrieved successfully.",
-        "data": user
+        "data": user_data
     }, 200
 
 
