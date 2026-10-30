@@ -4,7 +4,7 @@ from app.utils.logger import Logger
 from app.database.connection import get_connection
 from app.models.user import User, UserCreate, UserSearch
 
-logger = Logger.create_logger(__name__)
+logger = Logger.get_logger(__name__)
 
 def find_user_by_name(user_name: str) -> User | None:
     """

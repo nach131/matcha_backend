@@ -9,7 +9,7 @@ from app.services.users import (
     create_user,
 )
 
-logger = Logger.create_logger(__name__)
+logger = Logger.get_logger(__name__)
 users_bp = Blueprint("users", __name__, url_prefix="/users")
 
 

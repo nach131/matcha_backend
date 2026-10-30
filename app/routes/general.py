@@ -2,7 +2,7 @@
 from flask import Blueprint
 from app.utils.logger import Logger
 
-logger = Logger.create_logger(__name__)
+logger = Logger.get_logger(__name__)
 general_bp = Blueprint("general", __name__)
 
 @general_bp.route("/")

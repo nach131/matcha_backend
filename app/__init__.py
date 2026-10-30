@@ -6,9 +6,9 @@ from app.utils.logger import Logger
 from app.routes.registration import register_blueprints
 from app.utils.error_handler import register_error_handlers
 
-logger = Logger.create_logger()
-
 def create_app():
+    logger = Logger.create_logger()
+
     app = Flask(__name__)
     logger.info("Flask application created.")
 

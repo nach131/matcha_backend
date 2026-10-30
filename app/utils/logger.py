@@ -2,6 +2,8 @@
 
 import os, sys, logging, logging.handlers
 
+from pathlib import Path
+
 """
 CRITICAL = 50
 FATAL = CRITICAL
@@ -22,12 +24,14 @@ class Logger:
     _logger: logging.Logger | None = None
 
     @classmethod
-    def create_logger(cls, log_file: str = DEFAULT_LOG_FILE) -> logging.Logger:
+    def create_logger(cls, log_file: str = DEFAULT_LOG_FILE, log_level = None, to_stdout: bool = True) -> logging.Logger:
         """
         Create and configure the logger instance. If a logger already exists, return it. Otherwise, create a new logger with the specified log file and log level.
 
         Args:
-            log_file: The path to the log file if the user wants to specify a custom location.
+            log_file: To specify a custom log.
+            log_level: To change the log level (default: WARNING) 
+            to_stdout: To print or not the log to stdout
 
         Returns:
             The configured logger instance.
@@ -36,9 +40,11 @@ class Logger:
         if cls._logger is not None:
             return cls._logger
 
-        if os.getenv("LOG_LEVEL"):
+        if log_level is not None:
+            cls._log_level = log_level
+        elif os.getenv("LOG_LEVEL"):
             cls._log_level = logging.getLevelName(os.getenv("LOG_LEVEL"))
-        logger = logging.getLogger("matcha_backend")
+        logger = logging.getLogger(Path(log_file).stem if log_file != DEFAULT_LOG_FILE else "matcha_backend")
         logger.setLevel(cls._log_level)
 
         if not logger.handlers:
@@ -46,10 +52,11 @@ class Logger:
                 "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
             )
 
-            console_handler = logging.StreamHandler(sys.stdout)
-            console_handler.setLevel(cls._log_level)
-            console_handler.setFormatter(formatter)
-            logger.addHandler(console_handler)
+            if not to_stdout:
+                console_handler = logging.StreamHandler(sys.stdout)
+                console_handler.setLevel(cls._log_level)
+                console_handler.setFormatter(formatter)
+                logger.addHandler(console_handler)
 
             try:
                 # Size-based log rotation
