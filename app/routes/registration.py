@@ -17,6 +17,7 @@ api_bp = Blueprint("api", __name__, url_prefix="/api/v1")
 
 # TODO: Delete this line after testing
 api_bp.register_blueprint(general_bp)
+
 api_bp.register_blueprint(users_bp)
 api_bp.register_blueprint(messages_bp)
 api_bp.register_blueprint(reports_bp)
