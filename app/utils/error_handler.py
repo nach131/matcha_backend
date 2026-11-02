@@ -56,9 +56,7 @@ def handle_database_error(error: psycopg.Error):
 
 
 def register_error_handlers(app: Flask) -> None:
-    """
-    Register error handlers for the Flask application.
-    """
+    """Register error handlers for the Flask application."""
     
     app.register_error_handler(
         psycopg.errors.UniqueViolation,

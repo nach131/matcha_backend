@@ -44,6 +44,7 @@ class Logger:
             cls._log_level = log_level
         elif os.getenv("LOG_LEVEL"):
             cls._log_level = logging.getLevelName(os.getenv("LOG_LEVEL"))
+        # Path().stem returns the last part of the path, which is the filename without the extension.
         logger = logging.getLogger(Path(log_file).stem if log_file != DEFAULT_LOG_FILE else "matcha_backend")
         logger.setLevel(cls._log_level)
 
