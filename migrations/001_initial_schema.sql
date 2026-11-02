@@ -8,8 +8,8 @@ CREATE TABLE users (
     biography TEXT NOT NULL,
     latitude DOUBLE PRECISION NOT NULL,
     longitude DOUBLE PRECISION NOT NULL,
-    fame_rating DOUBLE PRECISION NOT NULL,
-    email_verified BOOLEAN NOT NULL,
+    fame_rating DOUBLE PRECISION NOT NULL DEFAULT 0,
+    email_verified BOOLEAN NOT NULL DEFAULT FALSE,
     last_login TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

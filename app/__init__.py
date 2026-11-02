@@ -1,16 +1,18 @@
+"""Flask main application factory and initialization."""
+
 from flask import Flask
-from app.routes.general import register_routes
-from app.routes.users import users_bp
+
+from app.utils.logger import Logger
+from app.routes.registration import register_blueprints
+from app.utils.error_handler import register_error_handlers
 
 def create_app():
-    # Create the Flask application
+    logger = Logger.create_logger()
+
     app = Flask(__name__)
+    logger.info("Flask application created.")
 
-    # TODO: Delete this line after testing
-    # Register general routes
-    register_routes(app)
-
-    # Register the users blueprint
-    app.register_blueprint(users_bp)
+    register_blueprints(app)
+    register_error_handlers(app)
 
     return app

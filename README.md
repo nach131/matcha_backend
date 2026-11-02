@@ -103,3 +103,21 @@ notifications
     # docker run -d -p 5100:5000 --name backend backend:1.0
     docker run <-d> <-p host_port:container_port> <--name container-name> <image-name>
 ```
+
+### CURL tests:
+```sh
+    # Get a user details
+    curl -X GET http://127.0.0.1:5100/api/v1/users/get/test
+
+    # Get all users that match the text "test"
+    curl -X GET http://127.0.0.1:5100/api/v1/users/search/test
+
+    # Create a user
+    curl -X POST http://127.0.0.1:5100/api/v1/users/create \
+        -H "Content-Type: application/json" \
+        -d '{"username":"toma", "email":"toma@tomate.com", "password":"tomate", "gender":"verdura", "sexual_preferences":"otras verduras", "biography":"Soy una muy buena verdura", "latitude": 0.5, "longitude": 0.5}'
+
+    curl -X POST http://127.0.0.1:5100/api/v1/users/create \
+        -H "Content-Type: application/json" \
+        -d '{"username":"test", "email":"test@testeado.com", "password":"tester", "gender":"testeador", "sexual_preferences":"otros testeadores", "biography":"Soy una muy buen testeador", "latitude": 1.5, "longitude": 1.5}'
+```
