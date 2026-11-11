@@ -3,14 +3,21 @@
 import re, math
 
 from collections.abc import Mapping
+from datetime import datetime
 
-from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
-from app.models.user import UserCreate
+from app.models.user import User, UserCreate
 from app.repositories.users import (
+    find_user_by_id,
     find_user_by_name,
+    record_user_login,
     search_users_by_name,
     insert_user,
+)
+from app.services.sessions import (
+    create_session,
+    revoke_session,
 )
 
 
@@ -23,6 +30,69 @@ def search_users(user_name: str):
     """Search for users by their username."""
 
     return search_users_by_name(user_name)
+
+
+def authenticate_user(data: Mapping[str, object]) -> User | None:
+    """Authenticate a user and record the successful login time."""
+
+    required_fields = {"username", "password"}
+    missing_fields = required_fields - set(data)
+    unexpected_fields = set(data) - required_fields
+    errors: list[str] = []
+
+    if missing_fields:
+        errors.append(
+            f"Missing required fields: {', '.join(sorted(missing_fields))}."
+        )
+    if unexpected_fields:
+        errors.append(
+            f"Unexpected fields: {', '.join(sorted(unexpected_fields))}."
+        )
+
+    username = data.get("username")
+    password = data.get("password")
+    if not isinstance(username, str) or not username.strip():
+        errors.append("'username' must be a non-empty string.")
+    if not isinstance(password, str) or not password.strip():
+        errors.append("'password' must be a non-empty string.")
+
+    if errors:
+        raise ValueError(" ".join(errors))
+
+    assert isinstance(username, str)
+    assert isinstance(password, str)
+    user = find_user_by_name(username.strip())
+    if user is None or not check_password_hash(user.password_hash, password):
+        return None
+
+    last_login = record_user_login(user.id)
+    if last_login is None:
+        return None
+
+    user.last_login = last_login
+    return user
+
+
+def login_user(
+    data: Mapping[str, object],
+) -> tuple[User, str, datetime] | None:
+    user = authenticate_user(data)
+    if user is None:
+        return None
+
+    token, expires_at = create_session(user.id)
+    return user, token, expires_at
+
+
+def get_user_by_id(user_id: int) -> User | None:
+    """Retrieve a user by their database identifier."""
+
+    return find_user_by_id(user_id)
+
+
+def logout_user(token: str | None) -> None:
+    revoke_session(token)
+
 
 def create_user(data: Mapping[str, object]) -> dict[str, int | str]:
     """
@@ -72,7 +142,7 @@ def create_user(data: Mapping[str, object]) -> dict[str, int | str]:
         if not isinstance(value, str) or not value.strip():
             errors.append(f"'{field}' must be a non-empty string.")
         else:
-            values[field] = value.strip()
+            values[field] = value if field == "password" else value.strip()
 
     email = values.get("email")
     if isinstance(email, str) and not re.fullmatch(

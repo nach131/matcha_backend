@@ -30,6 +30,46 @@ def find_resource(
             return cursor.fetchone()
 
 
+def find_resources_by_user(
+    spec: ResourceSpec,
+    user_id: int,
+) -> list[dict[str, object]]:
+    if spec.user_link is not None:
+        link_table, resource_field, user_field = spec.user_link
+        query = sql.SQL(
+            "SELECT DISTINCT resource.* "
+            "FROM {} AS resource "
+            "JOIN {} AS user_link "
+            "ON resource.{} = user_link.{} "
+            "WHERE user_link.{} = %s"
+        ).format(
+            sql.Identifier(spec.table),
+            sql.Identifier(link_table),
+            sql.Identifier(spec.primary_key[0]),
+            sql.Identifier(resource_field),
+            sql.Identifier(user_field),
+        )
+    else:
+        conditions = sql.SQL(" OR ").join(
+            sql.SQL("{} = %s").format(sql.Identifier(field))
+            for field in spec.user_filter_fields
+        )
+        query = sql.SQL("SELECT * FROM {} WHERE ({})").format(
+            sql.Identifier(spec.table),
+            conditions,
+        )
+
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            params = (
+                (user_id,)
+                if spec.user_link is not None
+                else (user_id,) * len(spec.user_filter_fields)
+            )
+            cursor.execute(query, params)
+            return cursor.fetchall()
+
+
 def insert_resource(
     spec: ResourceSpec,
     values: Mapping[str, object],

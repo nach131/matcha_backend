@@ -2,7 +2,11 @@
 
 from collections.abc import Mapping
 
-from app.repositories.resources import find_resource, insert_resource
+from app.repositories.resources import (
+    find_resource,
+    find_resources_by_user,
+    insert_resource,
+)
 from app.resources import RESOURCE_SPECS, ResourceSpec
 
 
@@ -24,6 +28,21 @@ def get_resource(
         raise ValueError("Resource identifiers must be positive integers.")
 
     return find_resource(spec, dict(zip(spec.primary_key, key_values)))
+
+
+def get_resources_by_user(
+    resource_name: str,
+    user_id: int,
+) -> list[dict[str, object]]:
+    spec = _get_spec(resource_name)
+    if type(user_id) is not int or user_id <= 0:
+        raise ValueError("User identifiers must be positive integers.")
+    if not spec.user_filter_fields and spec.user_link is None:
+        raise ValueError(
+            f"Resource {resource_name} is not associated with users."
+        )
+
+    return find_resources_by_user(spec, user_id)
 
 
 def create_resource(

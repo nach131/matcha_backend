@@ -2,7 +2,12 @@
 
 from flask import Blueprint, request
 
-from app.services.resources import create_resource, get_resource
+from app.services.resources import (
+    create_resource,
+    get_resource,
+    get_resources_by_user,
+)
+from app.utils.auth import require_session
 from app.utils.logger import Logger
 
 logger = Logger.get_logger(__name__)
@@ -23,6 +28,7 @@ def create_resource_blueprint(
     )
 
     @blueprint.get(f"/{key_path}")
+    @require_session
     def get_resource_route(**route_values: int):
         record = get_resource(
             resource_name,
@@ -41,7 +47,26 @@ def create_resource_blueprint(
             "data": record,
         }, 200
 
+    @blueprint.get("/by-user/<int:user_id>")
+    @require_session
+    def get_user_resources_route(user_id: int):
+        try:
+            records = get_resources_by_user(resource_name, user_id)
+        except ValueError as exc:
+            return {
+                "success": False,
+                "message": str(exc),
+                "data": None,
+            }, 400
+
+        return {
+            "success": True,
+            "message": f"{resource_name} retrieved successfully.",
+            "data": records,
+        }, 200
+
     @blueprint.post("/create")
+    @require_session
     def create_resource_route():
         data = request.get_json(silent=True)
         if not isinstance(data, dict):

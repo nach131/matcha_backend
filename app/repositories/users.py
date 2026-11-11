@@ -1,10 +1,13 @@
 """User repository for handling database operations related to users."""
 
+from datetime import datetime
+
 from app.utils.logger import Logger
 from app.database.connection import get_connection
 from app.models.user import User, UserCreate, UserSearch
 
 logger = Logger.get_logger(__name__)
+
 
 def find_user_by_name(user_name: str) -> User | None:
     """
@@ -53,6 +56,55 @@ def find_user_by_name(user_name: str) -> User | None:
         return None
 
     return User(**row)
+
+
+def find_user_by_id(user_id: int) -> User | None:
+    """Find a complete user record by its database identifier."""
+
+    query = """
+        SELECT
+            id,
+            username,
+            email,
+            password_hash,
+            gender,
+            sexual_preferences,
+            biography,
+            latitude,
+            longitude,
+            fame_rating,
+            email_verified,
+            last_login,
+            created_at
+        FROM users
+        WHERE id = %s
+    """
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query, (user_id,))
+            row = cursor.fetchone()
+
+    return None if row is None else User(**row)
+
+
+def record_user_login(user_id: int) -> datetime | None:
+    """Update and return the timestamp of a user's latest successful login."""
+
+    query = """
+        UPDATE users
+        SET last_login = CURRENT_TIMESTAMP
+        WHERE id = %s
+        RETURNING last_login
+    """
+    logger.debug("Updating last login timestamp for user ID: %s", user_id)
+
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query, (user_id,))
+            row = cursor.fetchone()
+
+    return None if row is None else row["last_login"]
+
 
 def search_users_by_name(user_name: str) -> list[UserSearch]:
     """
